@@ -1,3 +1,4 @@
+
 #include <iostream>
 using namespace std;
 
@@ -7,6 +8,9 @@ struct point{
 };
 
 int main(){
+	//dsaaaaaaaaaaaaaaaaaaaaaa
+	int b = 5;
+	int Terry = 1;
 	int a = 9;
 	return 0;
 }
