@@ -21,16 +21,9 @@ int f(){
 }
 
 int main(){
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
-	//dsaaaaaaaaaaaaaaaaaaaaaa
-	int b = 5;
-	int Terry = 1;
-	int a = 9;
->>>>>>> origin/master
-=======
+
+
 	//define two list
 	list<point> openList;
 	list<point> closeList;
@@ -41,6 +34,6 @@ int main(){
     	std::cout << '( << *it.x << ',' << *it.y << ") ";
 
   	std::cout << '\n';
->>>>>>> origin/master
+
 	return 0;
 }
