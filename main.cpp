@@ -3,6 +3,7 @@
 #include <list>
 #include <stdlib.h>
 #include <windows.h>
+#include <algorithm>
 using namespace std;
 
 //define a new class Point
@@ -92,11 +93,13 @@ int main(){
 	//define two list
 	list<Point> openList;
 	list<Point> closeList;
+	list<Point>::iterator iter;
+	iter = openList.begin();
 	
 	Point map[7][7];
 
-	int nowX = 0;
-	int nowY = 0;	
+	int nowX = 1;
+	int nowY = 1;	
 	
 	for (int i = 0; i < 7; i++) {
 		for (int j = 0; j < 7; j++) {
@@ -123,8 +126,8 @@ int main(){
 	map[4][5].setBlocked();
 	map[5][2].setBlocked();
 	////////////////////////////Make Outside Blocked
-	for (int i =0; i < 7; i++) {
-		for (int j= 0; j < 7; j++) {
+	for (int i = 0; i < 7; i++) {
+		for (int j = 0; j < 7; j++) {
 			if (i == 0 || i == 6 || j == 0 || j == 6) {
 				map[i][j].setBlocked();
 				closeList.push_back(map[i][j]);
@@ -132,6 +135,23 @@ int main(){
 		}
 	}
 	
+	//FOR TEST : get elements by iterator.
+	for (iter = openList.begin(); iter != openList.end(); ++iter) {
+		cout << "x : " << (*iter).getX()<<"\n";
+		
+		
+		//openList.erase(openList.begin());
+		//openList.erase(remove(openList.begin(), openList.end(), (*iter)), openList.end());
+
+		//iter = find(openList.begin(), openList.end(), map[1][1]);
+		//cout << "iter : " << (*iter).getX()<< " " << (*iter).getY() << endl;
+		//openList.remove(&map[0][0]);
+	}
+
+	
+//	openList.remove((Point)map[1][1]);
+		cout<< "openList Size : " << openList.size()<< "\n";
+/*
 	while ((openList.empty()) || !(nowX == 4 && nowY == 4)) {
 		
 		Point tempPoint = min_p(openList);
@@ -171,7 +191,7 @@ int main(){
 		cout << "Map : \n";
 		for (int i = 1; i < 6; i++) {
 			for (int j = 1; j < 6; j++) {
-				if (nowX == i && nowY == j) { cout << "@ "; continue; }
+				if (nowX == i && nowY == j) { cout << "! "; continue; }
 				if (map[i][j].isBlocked()) { cout << "x "; continue; }
 				if (map[i][j].isPassed()) { cout << "o "; continue; }
 				
@@ -181,10 +201,12 @@ int main(){
 			cout << "\n";
 		}
 
+		//test
+		cout << " now :" << nowX << ", " << nowY <<"\n";
+
 		for (int i = 1; i < 6; i++) {
 			for (int j = 1; j < 6; j++) {
 				cout << map[i][j].isPassed() << " ";
-
 
 			}
 			cout << "\n";
@@ -195,7 +217,7 @@ int main(){
 		Sleep(2000);
 
   	}
-
+	*/
 	return 0;
 }
 
