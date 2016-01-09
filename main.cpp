@@ -6,6 +6,9 @@
 
 using namespace std;
 
+int objectX = 5;
+int objectY = 5;
+
 //define a new class Point		
 class Point{
 	private:
@@ -25,7 +28,7 @@ class Point{
 		//Point initialise(int arr[][]){}
 		void setPoint(int , int );
 		void setParent(Point );
-		void setG();
+		void setG(Point);
 		void setH();
 		void setBlocked();
 		void setPassed();
@@ -49,7 +52,7 @@ class Point{
 //find the minimun f() among Points in the openList
 Point* min_p(list<Point*> l);
 //void print();
-void searchAround(int, int);
+//void searchAround(int , int , list<Point*> , Point* );
 
 int main(){
 
@@ -81,8 +84,8 @@ int main(){
 	closeList.push_back(map[2][3]);		// X 0 0 0 0 0 X		1: blocked
 	closeList.push_back(map[2][5]);		// X 0 1 0 1 1 X		0: way
 	closeList.push_back(map[4][2]);		// X 0 1 0 0 E X
-	closeList.push_back(map[4][4]);		// X X X X X X X		//I changed this map a little for verification of suitability of algorithm more efficiently.
-	closeList.push_back(map[4][5]);
+	closeList.push_back(map[4][4]);		// X X X X X X X		//changed this map a little for verification of suitability of algorithm more efficiently.
+	closeList.push_back(map[4][5]);								//caution! : can move diagonally
 	closeList.push_back(map[5][2]);
 	(*map[2][1]).setBlocked();
 	(*map[2][2]).setBlocked();
@@ -102,21 +105,7 @@ int main(){
 		}
 	}
 
-	////Print 
-	cout << "Map : Start \n";
-	for (int i = 1; i < 6; i++) {
-		for (int j = 1; j < 6; j++) {
-			if (nowX == i && nowY == j) { cout << "! "; continue; }
-			if ((*map[i][j]).isBlocked()) { cout << "x "; continue; }
-			if ((*map[i][j]).isPassed()) { cout << "o "; continue; }
-
-			cout << "- ";
-
-		}
-		cout << "\n";
-	}
-
-	/*// Example :::::::::::push,remove and iterator USAGE
+	/*-----Example ::::::push,remove and iterator USAGE
 	openList.push_back(map[2][1]);
 	openList.remove(map[1][1]);
 	for (list<Point*>::iterator iter = openList.begin(); iter != openList.end(); iter++)
@@ -124,55 +113,62 @@ int main(){
 		cout << (*iter)->getX() <<endl;
 	}
 	cout << "openList Size : " << openList.size() << "\n";
-	//---------------------------------------------------------------
-	*/
+	//---------------------------------------------------------------*/
 
-	/*//check whether min_p works rightly. It works rightly.
+	/*-----Check ::::::whether min_p works rightly. It works rightly.
 	openList.push_back(map[2][1]);
 	openList.push_back(map[4][2]);
 	Point* tempPoint = min_p(openList);
 	cout << "("<< tempPoint->getX() <<", "<< tempPoint->getY()<< ")\n";
 	cout << "openList Size : " << openList.size() << "\n";
-	//------------------------------------------------------------------
-	*/
+	//---------------------------------------------------------------*/
 
 	
-	while ((openList.empty()) || !(nowX == 5 && nowY == 5)) {
-		
-		Point* tempPoint = min_p(openList);
-		//add the minimun f() element into closeList
-		
-		int absX = abs((*tempPoint).getX() - nowX);
-		int absY = abs((*tempPoint).getY() - nowY);
+	while ((openList.empty()) || !(nowX == objectX && nowY==objectY) ) {
 
+		Point* tempPoint = min_p(openList);	
+
+		closeList.push_back(map[nowX][nowY]);
+		openList.remove(map[nowX][nowY]);
 		(*map[nowX][nowY]).setPassed();
-
-		if (absX >1 && absY >1) {
-			nowX = (*(*map[nowX][nowY]).getP()).getX();
-			nowY = (*(*map[nowX][nowY]).getP()).getY();
-		}
-
-		closeList.push_back(map[(*tempPoint).getX()][(*tempPoint).getY()]);
-		(*map[(*tempPoint).getX()][(*tempPoint).getY()]).setBlocked();
 		
-		//delete the element from openList	
-		//openList.erase(map[tempPoint.getX()][tempPoint.getY()]);
+		//openList.remove(map[(*tempPoint).getX()][(*tempPoint).getY()]);
+		
 		nowX = (*tempPoint).getX();
 		nowY = (*tempPoint).getY();
-		//searchAround(nowX, nowY);
 
-
+		//searchAround(nowX, nowY,openList,map);
 		//searchAround and add to openList
+		
 		for (int i = -1; i < 2; i++) {
 			for (int j = -1; j < 2; j++) {
-				if ((*map[nowX +i][nowY + j]).isBlocked()==false || (*map[nowX + i][nowY + j]).isPassed() ==false) {
-					openList.push_back(map[nowX + i][nowY + i]);
+				if (!((*map[nowX + i][nowY + j]).isBlocked() == true || (*map[nowX + i][nowY + j]).isPassed() == true) ) {
+					bool exist = false;
+					for (list<Point*>::iterator iter = openList.begin(); iter != openList.end(); iter++)					{
+						if (map[nowX + i][nowY + j] == map[(*iter)->getX()][(*iter)->getY()]) {
+							exist = true;
+						}
+					}
+					if (exist == false)
+					{ openList.push_back(map[nowX + i][nowY + j]); }
 				}
 			}
 		}
 
-		////Print
-		cout << "Map : \n";
+		/*int absX = abs((*tempPoint).getX() - nowX);
+		int absY = abs((*tempPoint).getY() - nowY);*/
+
+		/*if (absX >1 && absY >1) {
+			nowX = (*(*map[nowX][nowY]).getP()).getX();
+			nowY = (*(*map[nowX][nowY]).getP()).getY();
+		}*/
+
+		//(*map[(*tempPoint).getX()][(*tempPoint).getY()]).setBlocked();
+		
+
+
+		//Print
+		cout << "Map ::now (" << nowX << ", " << nowY <<")\n";
 		for (int i = 1; i < 6; i++) {
 			for (int j = 1; j < 6; j++) {
 				if (nowX == i && nowY == j) { cout << "! "; continue; }
@@ -185,9 +181,15 @@ int main(){
 			cout << "\n";
 		}
 
-		//test
-		cout << " now :" << nowX << ", " << nowY <<"\n";
+		cout << "openList : ";
+		for (list<Point*>::iterator iter = openList.begin(); iter != openList.end(); iter++)
+		{
+			cout << " (" << (*iter)->getX() <<", "<<(*iter)->getY()<<") ";
+		}
+		cout << "\n\n";
 
+
+		//for checking passed()
 		cout << "Passed check : \n";
 		for (int i = 1; i < 6; i++) {
 			for (int j = 1; j < 6; j++) {
@@ -196,23 +198,23 @@ int main(){
 			}
 			cout << "\n";
 		}
-
 		////
-  		cout << '\n';
+
+  		cout << "-----------------------------------------------------------------------------------\n";
 		Sleep(2000);
 
   	}
-	
+	cout << "Finished!\n";
 	return 0;
 }
 
-Point::Point() { setPoint(0, 0); g = 0; h = 0; passed = false; blocked = false; }
-Point::Point(int xx, int yy) { setPoint(xx, yy); g = 0; h = 0; passed = false; blocked = false;}
+Point::Point() { setPoint(0, 0); g = 0; h = 0;}
+Point::Point(int xx, int yy) { setPoint(xx, yy); g = 0; h = 0;}
 //Point initialise(int arr[][]){}
 
 void Point::setPoint(int a, int b) { x = a; y = b; }
 void Point::setParent(Point pp) { p = &pp; }
-void Point::setG() { ; }
+void Point::setG(Point p) { g =getDistance(p); }
 void Point::setH() { h = (5 - x) + (5 - y); }
 
 void Point::setBlocked() {blocked = true;}
@@ -255,11 +257,27 @@ Point* min_p(list<Point*> l) {
 
 
 //failed to implement outside of main() independantly. T-T
+
 /*
-void searchAround(int x, int y) {
-	Point temp =(Point)map[x-1][y-1]
-}
-*/
+void searchAround(int x, int y, list<Point*> l, Point* map) {
+	for (int i = -1; i < 2; i++) {
+		for (int j = -1; j < 2; j++) {
+			if (!((*map[x + i][y + j]).isBlocked() == true || (*map[x + i][y + j]).isPassed() == true)) {
+				bool exist = false;
+				for (list<Point*>::iterator iter = l.begin(); iter != l.end(); iter++) {
+					if (map[x + i][y + j] == map[(*iter)->getX()][(*iter)->getY()]) {
+						exist = true;
+					}
+				}
+				if (exist == false)
+				{
+					l.push_back(map[x + i][y + j]);
+				}
+			}
+		}
+	};
+}*/
+
 //failed to implement outside of main() independantly. T-T
 /*
 void print(Point* map) {
