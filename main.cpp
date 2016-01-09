@@ -6,9 +6,7 @@
 
 using namespace std;
 
-//define a new class Point
-		
-
+//define a new class Point		
 class Point{
 	private:
 		int x = 0;
@@ -16,7 +14,7 @@ class Point{
 		int g = 0;
 		int h = 0;
 
-		Point *p; 	//px,py : parent's x,y
+		Point *p; 	//p: pointer to parent 
 
 		bool passed = false;
 		bool blocked = false;
@@ -31,7 +29,7 @@ class Point{
 		void setH();
 		void setBlocked();
 		void setPassed();
-		void unSetPassed();
+		void unSetPassed();		//we will use when we track back
 		
 		int getDistance(Point ); //calculate distance (p->start)		
 		int getG(); //distance p->start (through parents) 		
@@ -103,7 +101,7 @@ int main(){
 			}
 		}
 	}
-		
+
 	////Print 
 	cout << "Map : Start \n";
 	for (int i = 1; i < 6; i++) {
@@ -118,20 +116,20 @@ int main(){
 		cout << "\n";
 	}
 
-	//for Test
-	openList.push_back(map[1][2]);
-	openList.remove(map[0][0]);
-
-	//openList.erase(remove(openList.begin(), openList.end(), (*iter)), openList.end());
-	//iter = find(openList.begin(), openList.end(), map[1][1]);
-	//cout << "iter : " << (*iter).getX()<< " " << (*iter).getY() << endl;
-	//openList.remove((Point)map[1][1]);
+	/*
+	///////// Example :::::::::::push,remove and iterator USAGE
+	openList.push_back(map[2][1]);
+	openList.remove(map[1][1]);
+	for (list<Point*>::iterator iter = openList.begin(); iter != openList.end(); iter++)
+	{
+		cout << (*iter)->getX() <<endl;
+	}
 	cout << "openList Size : " << openList.size() << "\n";
-	//Test end
+	
+	*/
 
-
-
-	while ((openList.empty()) || !(nowX == 4 && nowY == 4)) {
+	
+	while ((openList.empty()) || !(nowX == 5 && nowY == 5)) {
 		
 		Point* tempPoint = min_p(openList);
 		//add the minimun f() element into closeList
@@ -165,7 +163,6 @@ int main(){
 			}
 		}
 
-
 		////Print
 		cout << "Map : \n";
 		for (int i = 1; i < 6; i++) {
@@ -183,6 +180,7 @@ int main(){
 		//test
 		cout << " now :" << nowX << ", " << nowY <<"\n";
 
+		cout << "Passed check : \n";
 		for (int i = 1; i < 6; i++) {
 			for (int j = 1; j < 6; j++) {
 				cout << (*map[i][j]).isPassed() << " ";
@@ -207,7 +205,7 @@ Point::Point(int xx, int yy) { setPoint(xx, yy); g = 0; h = 0; passed = false; b
 void Point::setPoint(int a, int b) { x = a; y = b; }
 void Point::setParent(Point pp) { p = &pp; }
 void Point::setG() { ; }
-void Point::setH() { h = (4 - x) + (4 - y); }
+void Point::setH() { h = (5 - x) + (5 - y); }
 
 void Point::setBlocked() {blocked = true;}
 void Point::setPassed() { passed = true; }
@@ -234,7 +232,7 @@ bool Point::isPassed() { return passed; }
 
 
 Point* min_p(list<Point*> l) {
-	Point* minP = l->begin();
+	Point* minP = *(l.begin());
 	int minValue = 0;
 
 	for (list<Point*>::iterator it = l.begin(); it != l.end(); it++) {
@@ -246,7 +244,6 @@ Point* min_p(list<Point*> l) {
 	}
 	return minP;
 }
-
 
 
 //failed to implement outside of main() independantly. T-T
