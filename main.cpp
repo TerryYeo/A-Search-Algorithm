@@ -18,6 +18,8 @@ class Point{
 		int h = 0;
 
 		Point *p; 	//p: pointer to parent 
+		int pX = 0;
+		int pY = 0;
 
 		bool passed = false;
 		bool blocked = false;
@@ -27,27 +29,24 @@ class Point{
 		Point(int, int);
 		//Point initialise(int arr[][]){}
 		void setPoint(int , int );
-		void setParent(Point );
-		void setG(Point);
+		void setG(int);
 		void setH();
 		void setBlocked();
 		void setPassed();
 		void unSetPassed();		//we will use when we track back
-		
-		int getDistance(Point ); //calculate distance (p->start)		
+	
 		int getG(); //distance p->start (through parents) 		
 		int getH(); //distance p->end (by width + height)		
 		int getF(); //f(x) = g(x) + h(x)
 		int getX();
 		int getY();
 
-		Point *getP();
-		//int getPY(Point p) { return py; }
-
 		bool isBlocked();
 		bool isPassed();
-
+		
 };
+
+
 
 //find the minimun f() among Points in the openList
 Point* min_p(list<Point*> l);
@@ -62,7 +61,6 @@ int main(){
 	list<Point*>::iterator iter;
 	iter = openList.begin();
 	
-	//Point* mapA= new Point();
 	Point* map[7][7];
 
 	int nowX = 1;
@@ -128,14 +126,38 @@ int main(){
 
 		Point* tempPoint = min_p(openList);	
 
+		//for setG()
+		int absX = abs(nowX - (*tempPoint).getX());
+		int absY = abs(nowY - (*tempPoint).getY());
+		if (absX > 1 || absY > 1) {
+			int tempG = 0;
+			int tempMin = 100;
+			for (int i = -1; i < 2; i++) {
+				for (int j = -1; j < 2; j++) {
+					if (!((*map[(*tempPoint).getX() + i][(*tempPoint).getY() + j]).isBlocked() == true || (*map[(*tempPoint).getX() + i][(*tempPoint).getY() + j]).isPassed() == true)) {
+						if ((*map[(*tempPoint).getX() + i][(*tempPoint).getY() + j]).getG() < tempMin) {
+							tempG = (*map[(*tempPoint).getX() + i][(*tempPoint).getY() + j]).getG();
+						}
+					}
+				}
+			}
+			map[(*tempPoint).getX()][(*tempPoint).getY()]->setG(tempMin + 1);
+		}
+		else { map[(*tempPoint).getX()][(*tempPoint).getY()]->setG((*map[nowX][nowY]).getG() + 1); };
+
+
 		closeList.push_back(map[nowX][nowY]);
 		openList.remove(map[nowX][nowY]);
 		(*map[nowX][nowY]).setPassed();
 		
-		//openList.remove(map[(*tempPoint).getX()][(*tempPoint).getY()]);
-		
+		//map[(*tempPoint).getX()][(*tempPoint).getY()]->setParent(nowX,nowY);
+
 		nowX = (*tempPoint).getX();
 		nowY = (*tempPoint).getY();
+
+
+		//map[nowX][nowY]->setG(map);
+		
 
 		//searchAround(nowX, nowY,openList,map);
 		//searchAround and add to openList
@@ -155,20 +177,10 @@ int main(){
 			}
 		}
 
-		/*int absX = abs((*tempPoint).getX() - nowX);
-		int absY = abs((*tempPoint).getY() - nowY);*/
-
-		/*if (absX >1 && absY >1) {
-			nowX = (*(*map[nowX][nowY]).getP()).getX();
-			nowY = (*(*map[nowX][nowY]).getP()).getY();
-		}*/
-
 		//(*map[(*tempPoint).getX()][(*tempPoint).getY()]).setBlocked();
-		
-
 
 		//Print
-		cout << "Map ::now (" << nowX << ", " << nowY <<")\n";
+		cout << "Map ::\n";
 		for (int i = 1; i < 6; i++) {
 			for (int j = 1; j < 6; j++) {
 				if (nowX == i && nowY == j) { cout << "! "; continue; }
@@ -199,6 +211,7 @@ int main(){
 			cout << "\n";
 		}
 		////
+		cout << "Now : (" << map[nowX][nowY]->getX() <<", "<< map[nowX][nowY]->getY() << ")\nG : "<<(*map[nowX][nowY]).getG() << "\nH : " << (*map[nowX][nowY]).getH() << "\n";
 
   		cout << "-----------------------------------------------------------------------------------\n";
 		Sleep(2000);
@@ -213,8 +226,8 @@ Point::Point(int xx, int yy) { setPoint(xx, yy); g = 0; h = 0;}
 //Point initialise(int arr[][]){}
 
 void Point::setPoint(int a, int b) { x = a; y = b; }
-void Point::setParent(Point pp) { p = &pp; }
-void Point::setG(Point p) { g =getDistance(p); }
+//void Point::setParent(Point* pp) { p = pp; }
+void Point::setG(int a) { g=a; }
 void Point::setH() { h = (5 - x) + (5 - y); }
 
 void Point::setBlocked() {blocked = true;}
@@ -226,16 +239,6 @@ int Point::getH() {return h;} //distance p->end (by width + height)
 int Point::getF() {return (g + h);} //f(x) = g(x) + h(x)
 int Point::getX() {return x;}
 int Point::getY() {return y;}
-Point* Point::getP() { return p; }
-//int getPY(Point p) { return py; }
-
-//calculate distance (p->start) by passed path
-int Point::getDistance(Point p) {
-	if (getX() != 0 || getY() != 0) {
-		return getDistance( *(p.getP()) ) + 1;
-	}
-	else { return 0; }
-}
 
 bool Point::isBlocked() { return blocked; }
 bool Point::isPassed() { return passed; }
@@ -257,7 +260,6 @@ Point* min_p(list<Point*> l) {
 
 
 //failed to implement outside of main() independantly. T-T
-
 /*
 void searchAround(int x, int y, list<Point*> l, Point* map) {
 	for (int i = -1; i < 2; i++) {
