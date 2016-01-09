@@ -116,8 +116,7 @@ int main(){
 		cout << "\n";
 	}
 
-	/*
-	///////// Example :::::::::::push,remove and iterator USAGE
+	/*// Example :::::::::::push,remove and iterator USAGE
 	openList.push_back(map[2][1]);
 	openList.remove(map[1][1]);
 	for (list<Point*>::iterator iter = openList.begin(); iter != openList.end(); iter++)
@@ -125,7 +124,16 @@ int main(){
 		cout << (*iter)->getX() <<endl;
 	}
 	cout << "openList Size : " << openList.size() << "\n";
-	
+	//---------------------------------------------------------------
+	*/
+
+	/*//check whether min_p works rightly. It works rightly.
+	openList.push_back(map[2][1]);
+	openList.push_back(map[4][2]);
+	Point* tempPoint = min_p(openList);
+	cout << "("<< tempPoint->getX() <<", "<< tempPoint->getY()<< ")\n";
+	cout << "openList Size : " << openList.size() << "\n";
+	//------------------------------------------------------------------
 	*/
 
 	
@@ -237,8 +245,8 @@ Point* min_p(list<Point*> l) {
 
 	for (list<Point*>::iterator it = l.begin(); it != l.end(); it++) {
 		int temp = (*it)->getF();
-		if (temp < minValue) {
-			minValue = temp;
+		if (minValue < temp) {
+			temp = minValue;
 			minP = *it;
 		}
 	}
